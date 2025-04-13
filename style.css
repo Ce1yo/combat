@@ -76,7 +76,7 @@ nav a:hover {
 
 /* Hero Section */
 .hero-section {
-    height: 60vh;
+    height: 80vh;
     position: relative;
     display: flex;
     align-items: center;
@@ -89,37 +89,41 @@ nav a:hover {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 120%;
     height: 100%;
     z-index: -1;
+    overflow: hidden;
 }
 
 .hero-image img {
-    width: 100%;
-    height: 100%;
+    width: 120%;
+    height: 120%;
     object-fit: cover;
-    object-position: center 20%;
+    object-position: center top;
     filter: brightness(0.7);
+    transform: translate(-24%, 15%) scale(1);
 }
 
 .hero-content {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
     width: 100%;
     height: 100%;
-    padding: 2rem;
+    padding: 4rem;
     position: relative;
     z-index: 1;
+    text-align: center;
+    transform: translateX(15%);
 }
 
 .hero-section h1 {
     color: var(--background-color);
-    font-size: 4rem;
+    font-size: 2.5rem;
     text-align: center;
-    max-width: 800px;
-    margin-bottom: 1rem;
+    max-width: 600px;
+    margin-bottom: 0.5rem;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     font-family: 'AktivGrotesk', sans-serif;
     font-weight: 700;
@@ -128,17 +132,21 @@ nav a:hover {
 .hero-text {
     color: var(--background-color);
     text-align: center;
-    font-size: 1.2rem;
-    line-height: 1.6;
-    max-width: 600px;
-    margin: 0 auto;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    width: 100%;
     font-family: 'AktivGrotesk', sans-serif;
     font-weight: 100;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .hero-text p {
     margin: 0.3rem 0;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    white-space: nowrap;
+    display: inline-block;
 }
 
 /* Contenu principal */
@@ -254,22 +262,22 @@ main {
 /* Section Mentalité */
 .mentalite {
     max-width: 800px;
-    margin: 8rem auto;
+    margin: 6rem auto;
     padding: 0 2rem;
     color: var(--background-color);
 }
 
 .mentalite h2 {
     font-size: 2.5rem;
-    margin-bottom: 4rem;
+    margin-bottom: 3rem;
     font-weight: normal;
 }
 
 .quote-block {
-    margin: 4rem 0;
+    margin: 3rem 0;
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .quote-line {
@@ -278,20 +286,22 @@ main {
     background-color: var(--primary-color);
 }
 
-.quote {
-    font-size: 1.5rem;
+.quote-block .quote {
+    font-size: 1.4rem;
+    font-style: italic;
+    margin-bottom: 0.8rem;
     font-family: 'IvyOra-Italic', serif;
-    color: var(--background-color);
 }
 
 .text-block {
-    margin: 2rem 0;
-    line-height: 1.8;
+    margin: 1.5rem 0;
+    line-height: 1.6;
 }
 
 .text-block p {
-    margin: 1.5rem 0;
-    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+    font-size: 1rem;
+    line-height: 1.4;
     font-family: 'AktivGrotesk', sans-serif;
     font-weight: 100;
 }
@@ -339,19 +349,17 @@ main {
 
 /* Timeline d'expérience */
 .timeline {
-    max-width: 1200px;
-    margin: 6rem auto;
+    max-width: 800px;
+    margin: 12rem auto 6rem;
     padding: 0 2rem;
     position: relative;
 }
 
 .timeline h2 {
-    text-align: center;
-    font-family: 'AktivGrotesk', sans-serif;
-    font-weight: 700;
-    font-size: 2.5rem;
+    font-size: 2rem;
+    margin: -6rem 0 6rem 0;
+    font-weight: normal;
     color: var(--background-color);
-    margin-bottom: 4rem;
 }
 
 .timeline::after {
