@@ -3,140 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>L'origine du combat | Combat</title>
+    <title>Combat - Donner un sens aux défis</title>
     <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
 </head>
 <body>
     <header>
         <nav>
             <ul>
                 <li><a href="index.html">Bienvenue</a></li>
-                <li><a href="demonstrations.html">Démonstrations</a></li>
-                <li><a href="histoire.html">L'origine du combat</a></li>
-                <li><a href="contact.html">Faisons équipe</a></li>
+                <li><a href="1.html">Démonstrations</a></li>
+                <li><a href="2.html">L'origine du combat</a></li>
+                <li><a href="3.html">Faisons équipe</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <div class="hero-section">
-            <div class="hero-image">
-                <!-- Image de fond héroïque -->
-                <img src="images/the-batman-new-images-and-posters_3e9n.jpeg" alt="Image héroïque de l'histoire de Combat">
-            </div>
-            <div class="hero-content">
-                <h1>Il n'y a pas eu de déclic.</h1>
+        <section class="home-hero">
+            <div class="hero-content scale-in">
+                <h1 class="slide-in-left">DONNER UN SENS AUX DÉFIS</h1>
                 <div class="hero-text">
-                    <p>Juste une suite d'expériences, de silences, d'envies mal exprimées.</p>
-                    <p>Et puis un jour, l'idée est devenue un nom. Le nom est devenu une ligne.</p>
-                    <p>combat' ce n'est pas un projet. C'est une manière de faire face.</p>
+                    <p>Derrière chaque projet, il y a un combat.</p>
+                    <p>Celui de dépasser ses limites, innover, et laisser une empreinte.</p>
+                    <p>Chaque échec devient une leçon, chaque victoire une inspiration.</p>
+                    <p>Bienvenue dans un univers, où chaque défi est transformé en opportunité.</p>
+                </div>
+                <a href="1.html" class="cta-button">Preuves par l'action</a>
+            </div>
+        </section>
+
+        <section class="values-section">
+            <h2>Ce qui me pousse à avancer</h2>
+            <p class="section-intro">Chaque projet, chaque idée, chaque essai porte une trace de mon parcours. Voici les fondations de ce qui donne un sens au combat</p>
+
+            <div class="values-grid">
+                <div class="value-card fade-in">
+                    <h3>Mon parcours</h3>
+                    <p>Le design et la communication ne sont pas juste des outils : ce sont mes terrains d'exploration. J'y ai vu un moyen de transformer les idées en impact. Pas besoin de grands projets pour apprendre, chaque essai, chaque détour, a aiguisé ma vision et renforcé ma volonté de créer avec du sens.</p>
+                </div>
+
+                <div class="value-card fade-in">
+                    <h3>Mes valeurs</h3>
+                    <p>Esprit combat repose sur trois piliers : authenticité, persévérance, et mouvement. Ne pas tricher. Ne pas lâcher. Toujours avancer. Chaque projet est une opportunité d'ancrer ces valeurs dans quelque chose de concret, durable, qui parle vrai.</p>
+                </div>
+
+                <div class="value-card fade-in">
+                    <h3>Une leçon</h3>
+                    <p>Douter, tomber, recommencer. Ça a toujours fait partie du processus. Les échecs ont laissé des traces, mais aussi des repères. Ce n'est pas la chute qui forge, c'est la décision de se relever. C'est ça, mon moteur : apprendre, adapter, et continuer d'y croire.</p>
+                    <a href="2.html" class="text-link">Lire l'origine du combat</a>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <section class="histoire-content">
-            <div class="intro-section">
-                <div class="intro-background left">
-                    <img src="images/MULTI_HALFTONE_BLANC.png" alt="Image de fond gauche">
+        <section class="portfolio-preview">
+            <div class="portfolio-container">
+                <div class="portfolio-slider">
+                    <div class="slider-track">
+                        <div class="slide fade-in">
+                            <div class="slide-content">
+                                <img src="images/the-batman-new-images-and-posters_3e9n.jpeg" alt="Projet 1" class="slide-image">
+                                <div class="slide-overlay">
+                                    <h3 class="slide-title">Projet 1</h3>
+                                    <p class="slide-description">Description du projet</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slide fade-in">
+                            <div class="slide-content">
+                                <img src="images/Ombre_4K.png" alt="Projet 2" class="slide-image">
+                                <div class="slide-overlay">
+                                    <h3 class="slide-title">Projet 2</h3>
+                                    <p class="slide-description">Description du projet</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slide fade-in">
+                            <div class="slide-content">
+                                <img src="images/MULTI_HALFTONE_BLANC.png" alt="Projet 3" class="slide-image">
+                                <div class="slide-overlay">
+                                    <h3 class="slide-title">Projet 3</h3>
+                                    <p class="slide-description">Description du projet</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slider-controls">
+                        <button class="slider-nav prev" aria-label="Projet précédent">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
+                                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                            </svg>
+                        </button>
+                        <div class="slider-dots"></div>
+                        <button class="slider-nav next" aria-label="Projet suivant">
+                            <svg viewBox="0 0 24 24" width="24" height="24">
+                                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="intro-background right">
-                    <img src="images/IMG_5983-2.jpeg" alt="Image de fond droite">
-                </div>
-                <div class="intro-image">
-                    <img src="images/FACE2.png" alt="Image illustrative de Combat">
-                </div>
-
+                <div class="portfolio-content">
+                    <h2>De l'idée à l'action</h2>
+                    <div class="portfolio-text">
+                <p>Pas d'explication. Pas de détail. Juste des images.</p>
+                <p>Ces projets ne se dévoilent pas entièrement ici. Ce sont des fragments, des premiers aperçus, des débuts qui racontent peu… mais suggèrent beaucoup.</p>
+                <p>Chaque visuel présenté est extrait d'un processus plus vaste. Derrière, il y a des recherches, des intentions, des choix ; parfois instinctifs, parfois stratégiques.</p>
+                <p>Pour comprendre l'ensemble, pour voir ce qui se cache derrière l'image, il faut aller plus loin.</p>
+                <a href="1.html" class="cta-button">Voir les démonstrations</a>
             </div>
+        </section>
 
-            <section class="mentalite">
-                <h2>Une mentalité...</h2>
-                
-                <div class="quote-block">
-                    <span class="quote-line"></span>
-                    <p class="quote">"On peut faire mieux."</p>
-                </div>
-
-                <div class="text-block">
-                    <p>Cette phrase, répétée pendant des années, est longtemps restée <strong>mon seul moteur</strong>. <BR> Un réflexe, un murmure intérieur face à chaque résultat qui ne me convenait pas, face à chaque sentiment d'inachevé.</p>
-                    <p>Elle m'a porté, <strong>inspiré</strong>, mais elle a aussi ouvert la voie à beaucoup de doutes, d'échecs et de remises en question. <BR>Et c'est justement là qu'est né Esprit combat.</p>
-                </div>
-
-                <div class="text-block">
-                    <p>Se battre est une mentalité. Celle de tomber, souvent... Mais avant tout, celle de <strong>se relever à chaque fois</strong>. Celle de continuer, même quand tout pousse à abandonner. Ce n'est pas une marque née d'un succès.</p>
-                    <p>C'est <strong>une réponse à l'échec</strong>, une réaction à la chute, une manière de transformer les défaites en carburant.</p>
-                </div>
-
-                <div class="quote-block">
-                    <span class="quote-line"></span>
-                    <p class="quote">"Certains bâtissent sur des fondations. D'autres sur des cicatrices."</p>
-                </div>
-
-                <div class="text-block">
-                    <p>Le combat, c'est ce qui reste quand il n'y a plus de certitudes. Quand il ne reste <strong>que la volonté d'avancer</strong>, de faire mieux, de créer malgré tout. C'est l'envie de donner du sens à ce qu'on fait, même dans le doute, <strong>même dans le brouillard</strong>.</p>
-                    <p>Ce projet n'a pas été construit sur des fondations solides. Il s'est bâti sur des failles, des remises en question. Mais c'est ce qui en fait sa force. Car derrière chaque idée, chaque visuel, chaque choix, il y a une intention : <strong>se battre</strong> pour ce qui vaut la peine d'être montré.</p>
-                    <p>Esprit combat, aujourd'hui, c'est une marque. Une signature. Mais avant tout, c'est une manière d'exister.</p>
-                    <p>Une posture face à la création : <strong>lucide, intense, et libre</strong>.</p>
-                </div>
-            </section>
-            </section>
-
-            <section class="timeline">
-                <h2>Expériences</h2>
-                <div class="timeline-item left">
-                    <div class="timeline-date">2023 - 2024</div>
-                    <div class="timeline-content">
-                        <h3>Directeur Artistique</h3>
-                        <p>Création et direction de projets visuels pour des clients majeurs. Développement d'identités de marque innovantes et supervision d'équipes créatives.</p>
-                    </div>
-                </div>
-
-                <div class="timeline-item right">
-                    <div class="timeline-date">2021 - 2023</div>
-                    <div class="timeline-content">
-                        <h3>Designer Graphique Senior</h3>
-                        <p>Conception de campagnes visuelles impactantes et élaboration de chartes graphiques complètes. Collaboration étroite avec les équipes marketing et communication.</p>
-                    </div>
-                </div>
-
-                <div class="timeline-item left">
-                    <div class="timeline-date">2019 - 2021</div>
-                    <div class="timeline-content">
-                        <h3>Designer Indépendant</h3>
-                        <p>Création de projets personnels et collaborations freelance. Développement d'une approche unique et d'une signature visuelle distinctive.</p>
-                    </div>
-                </div>
-            </section>
-
-            <section class="social-section">
-                <h2>Restons connectés</h2>
-                <div class="social-grid">
-                    <div class="social-item">
-                        <h3>Instagram</h3>
-                        <p>Suivez mon travail et mes créations au quotidien</p>
-                        <a href="https://instagram.com/esprit.combat" target="_blank">Voir le profil</a>
-                    </div>
-
-                    <div class="social-item">
-                        <h3>LinkedIn</h3>
-                        <p>Découvrez mon parcours professionnel</p>
-                        <a href="https://www.linkedin.com/in/baptiste-bengler-68b07b214/" target="_blank">Mon profil</a>
-                    </div>
-
-                    <div class="social-item">
-                        <h3>Behance</h3>
-                        <p>Explorez mon portfolio complet</p>
-                        <a href="https://www.behance.net/baptistebengler1" target="_blank">Voir le portfolio</a>
-                    </div>
-                </div>
-            </section>
+        <section class="social-section">
+            <h2 class="slide-in-right">combat' au quotidien</h2>
+            <div class="social-content">
+                <p>L'esprit combatif vit aussi en dehors des projets.</p>
+                <p>C'est une veille, un ressenti, une manière de capter ce qui m'inspire sur le moment.</p>
+                <p>Sur Instagram, pas de calendrier, pas de règles. Juste des images, des idées, parfois des détours, toujours en mouvement.</p>
+            </div>
         </section>
     </main>
 
     <footer>
         <div class="contact-info">
             <h3>Mes réseaux sociaux</h3>
-            <p>01 23 45 67 89</p>
-            <p><a href="mailto:info@monsite.com">info@monsite.com</a></p>
+            <p>0101010101</p>
+            <p><a href="mailto:baptiste.bengler@gmail.com">baptiste.bengler@gmail.com</a></p>
             <p>Paris, France</p>
         </div>
     </footer>
