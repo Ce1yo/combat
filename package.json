@@ -2,12 +2,21 @@
   "name": "site-baptiste",
   "version": "1.0.0",
   "description": "Site web de Baptiste avec système d'administration",
-  "main": "server.js",
+  "main": "index.html",
   "scripts": {
-    "start": "node server.js",
+    "start": "netlify dev",
+    "build": "echo 'No build required'",
     "dev": "netlify dev"
   },
   "dependencies": {
+    "@netlify/functions": "^2.0.0",
     "firebase": "^10.1.0",
-    "firebase-admin": "^11.10.1",
-    "@netlify/funct
+    "firebase-admin": "^11.10.1"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
