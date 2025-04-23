@@ -5,24 +5,26 @@ const categoriesCollection = collection(db, 'categories');
 const adminsCollection = collection(db, 'admins');
 
 // Vérifier si l'utilisateur est admin
-async function checkAdminStatus(userId) {
+function checkAdminStatus(userId) {
     return true; // Pour le développement, on autorise tout le monde
 }
 
 // Fonction pour créer une nouvelle catégorie
-async function createNewCategory(title, description, imageFile) {
-    try {
-        // Vérifier si l'utilisateur est connecté
-        const user = auth.currentUser;
-        if (!user) {
-            throw new Error('Vous devez être connecté pour créer une catégorie');
-        }
+async function createNewCategory(event) {
+    event.preventDefault();
 
-        // Vérifier si l'utilisateur est admin
-        const isAdmin = await checkAdminStatus(user.uid);
-        if (!isAdmin) {
-            throw new Error('Vous devez être administrateur pour créer une catégorie');
-        }
+    const user = auth.currentUser;
+    if (!user) {
+        alert('Vous devez être connecté pour créer une catégorie');
+        return;
+    }
+
+    try {
+        // Récupérer les valeurs du formulaire
+        const title = document.getElementById('categoryTitle').value.trim();
+        const description = document.getElementById('categoryDescription').value.trim();
+        const imageFile = document.getElementById('categoryImage').files[0];
+
         // Vérifier que tous les champs sont remplis
         if (!title || !description || !imageFile) {
             throw new Error('Tous les champs sont requis');
