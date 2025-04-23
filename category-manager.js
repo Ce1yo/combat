@@ -1,6 +1,4 @@
-import { db, collection, addDoc } from './firebase-config.js';
-
-// Imports Firebase
+import { db, auth } from './firebase-config.js';
 import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
 
 // Collection des catégories dans Firestore

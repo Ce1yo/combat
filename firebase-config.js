@@ -19,7 +19,13 @@ console.log('Initialisation de Firebase...');
 const app = initializeApp(firebaseConfig);
 console.log('Firebase app initialisée:', app);
 
+// Configuration de Firestore avec CORS
 const db = getFirestore(app);
+const settings = {
+  experimentalForceLongPolling: true,
+  useFetchStreams: false
+};
+getFirestore(app, settings);
 console.log('Firestore initialisé');
 
 const auth = getAuth(app);
@@ -45,4 +51,8 @@ async function createAdminIfNeeded(email, password) {
     }
 }
 
-export { db, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createAdminIfNeeded };
+export { 
+    db,
+    auth,
+    createAdminIfNeeded 
+};
