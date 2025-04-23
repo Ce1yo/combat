@@ -4,11 +4,33 @@ let isEditing = false;
 // Vérifier si l'utilisateur est admin
 function checkAdminStatus() {
     const password = localStorage.getItem('adminPassword');
-    if (password === 'votre_mot_de_passe_admin') {
+    if (password === '1234') {
         isAdmin = true;
         return true;
     }
     return false;
+}
+
+function updateAdminButton() {
+    const adminButton = document.querySelector('#admin-button');
+    if (!adminButton) return;
+
+    if (isAdmin) {
+        adminButton.textContent = 'Déconnexion Admin';
+        adminButton.style.backgroundColor = '#4CAF50';
+        document.body.classList.add('admin-mode');
+    } else {
+        adminButton.textContent = 'Connexion Admin';
+        adminButton.style.backgroundColor = '#333';
+        document.body.classList.remove('admin-mode');
+    }
+}
+
+function handleLogout() {
+    localStorage.removeItem('adminPassword');
+    isAdmin = false;
+    updateAdminButton();
+    location.reload();
 }
 
 // Création de la barre d'outils d'édition
@@ -292,12 +314,20 @@ function showErrorIndicator(message = 'Erreur lors de la sauvegarde') {
 
 // Fonction pour gérer la connexion admin
 function handleAdminLogin() {
+    if (isAdmin) {
+        if (confirm('Voulez-vous vous déconnecter ?')) {
+            handleLogout();
+        }
+        return;
+    }
+
     const password = prompt('Entrez le mot de passe administrateur :');
-    if (password === 'votre_mot_de_passe_admin') {
+    if (password === '1234') {
         localStorage.setItem('adminPassword', password);
         isAdmin = true;
         makeContentEditable();
         loadSavedContent();
+        updateAdminButton();
     } else {
         alert('Mot de passe incorrect');
     }
@@ -312,17 +342,49 @@ function startAutoRefresh() {
     setInterval(loadSavedContent, 30000);
 }
 
+// Style pour le mode admin
+const style = document.createElement('style');
+style.textContent = `
+    .admin-mode .editable {
+        outline: 2px dashed #4CAF50;
+        position: relative;
+    }
+    .admin-mode .editable:hover {
+        outline: 2px solid #4CAF50;
+        background: rgba(76, 175, 80, 0.1);
+    }
+    #admin-button {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 1000;
+        padding: 10px 20px;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+    #admin-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+`;
+document.head.appendChild(style);
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
     // Vérifier si le bouton admin existe déjà
     if (!document.querySelector('#admin-button')) {
         const adminButton = document.createElement('button');
         adminButton.id = 'admin-button';
-        adminButton.textContent = 'Admin';
-        adminButton.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer;';
-        document.body.appendChild(adminButton);
         adminButton.addEventListener('click', handleAdminLogin);
+        document.body.appendChild(adminButton);
     }
+
+    // Mettre à jour l'apparence du bouton
+    updateAdminButton();
 
     // Rendre le contenu modifiable si admin
     if (checkAdminStatus()) {

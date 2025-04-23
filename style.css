@@ -1884,4 +1884,154 @@ footer {
     /* Navigation */
     nav ul {
         flex-direction: column;
- 
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+    }
+
+    nav ul li {
+        margin: 0.5rem 0;
+    }
+
+    /* Hero section */
+    .hero-content {
+        padding: 2rem 1rem;
+    }
+
+    .hero-section h1 {
+        font-size: 2.5rem;
+    }
+
+    /* Sections générales */
+    .intro-section h2 {
+        font-size: 1.8rem;
+    }
+
+    .mentalite-header h2 {
+        font-size: 2.5rem;
+    }
+
+    /* Portfolio et projets */
+    .portfolio-categories,
+    .project-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+
+    .portfolio-slider {
+        height: 300px;
+    }
+
+    .slider-controls {
+        padding: 0.5rem;
+    }
+
+    /* Cartes */
+    .category-card,
+    .project-card {
+        margin: 0 0.5rem;
+    }
+
+    .category-info h2,
+    .project-info h2 {
+        font-size: 1.5rem;
+    }
+
+    .category-info p,
+    .project-info p {
+        font-size: 1rem;
+    }
+
+    /* Citations et textes */
+    .highlight-quote,
+    .quote {
+        font-size: 1.8rem;
+    }
+
+    .quote-section {
+        height: 300px;
+    }
+
+    /* Section sociale */
+    .social-content {
+        padding: 1.5rem;
+    }
+
+    /* Grilles */
+    .values-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    /* Contact */
+    .contact-content {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+
+    .contact-info {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .contact-item {
+        width: 100%;
+        max-width: 300px;
+        margin: 0.5rem 0;
+    }
+}
+
+/* Ajout d'un breakpoint pour les très petits écrans */
+@media (max-width: 480px) {
+    /* Textes */
+    .hero-content h1 {
+        font-size: 2rem;
+    }
+
+    .hero-text p {
+        font-size: 1rem;
+        margin: 0.5rem 0;
+    }
+
+    /* Boutons */
+    .cta-button,
+    .category-link,
+    .project-link {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+
+    /* Marges et espacements */
+    .portfolio-categories,
+    .project-grid,
+    .values-grid {
+        padding: 1rem;
+        gap: 1rem;
+    }
+
+    /* Footer */
+    footer {
+        padding: 2rem 1rem;
+    }
+
+    footer p {
+        font-size: 0.9rem;
+    }
+
+    /* Slider */
+    .portfolio-slider {
+        height: 250px;
+    }
+
+    .slider-nav {
+        width: 30px;
+        height: 30px;
+    }
+
+    /* Images */
+    .category-image,
+    .project-image {
+        padding-top: 66.67%;
+    }
+}
