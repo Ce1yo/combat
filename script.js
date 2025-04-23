@@ -261,31 +261,4 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="project-technologies">
                                 <h3>Technologies utilisées:</h3>
                                 <ul>
-                                    ${project.technologies.map(tech => `<li>${tech}</li>`).join('')}
-                                </ul>
-                            </div>
-                            ${project.link ? `<a href="${project.link}" class="project-link" target="_blank">Voir le projet</a>` : ''}
-                        </div>
-                    `;
-                    modalBody.innerHTML = content;
-                    modal.style.display = 'block';
-                    document.body.style.overflow = 'hidden';
-                }
-            });
-        });
-
-        // Fermer la modal
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        });
-
-        // Fermer la modal en cliquant en dehors
-        window.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            }
-        });
-    }
-});
+                        

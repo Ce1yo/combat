@@ -1,3 +1,5 @@
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+
 // Création de la barre d'outils d'édition
 function createEditorToolbar() {
     const toolbar = document.createElement('div');
@@ -41,7 +43,10 @@ function makeContentEditable() {
     if (!checkAdminStatus()) return;
 
     const toolbar = createEditorToolbar();
-    let currentEditableElement = null;
+    import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+
+    let isAdmin = false;
+    let isEditing = false;
 
     // Liste des sélecteurs d'éléments modifiables
     const editableSelectors = [
@@ -100,15 +105,18 @@ async function saveContent(event) {
     const path = window.location.pathname;
 
     try {
-        const response = await fetch('/.netlify/functions/saveContent', {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/site_content`, {
             method: 'POST',
             headers: {
+                'apikey': SUPABASE_ANON_KEY,
                 'Content-Type': 'application/json',
+                'Prefer': 'resolution=merge-duplicates'
             },
             body: JSON.stringify({
                 path,
                 selector,
-                content
+                content,
+                updated_at: new Date().toISOString()
             })
         });
 
@@ -149,20 +157,24 @@ function showSavedIndicator() {
 // Fonction pour charger le contenu sauvegardé
 async function loadSavedContent() {
     try {
-        const response = await fetch('/.netlify/functions/getContent');
+        const currentPath = window.location.pathname;
+        const response = await fetch(
+            `${SUPABASE_URL}/rest/v1/site_content?path=eq.${encodeURIComponent(currentPath)}`, {
+            headers: {
+                'apikey': SUPABASE_ANON_KEY
+            }
+        });
+
         if (!response.ok) throw new Error('Erreur lors du chargement');
         
-        const savedContent = await response.json();
-        const currentPath = window.location.pathname;
-
-        if (savedContent[currentPath]) {
-            Object.entries(savedContent[currentPath]).forEach(([selector, content]) => {
-                const elements = document.querySelectorAll('.' + selector) || document.querySelectorAll(selector);
-                elements.forEach(element => {
-                    element.innerHTML = content;
-                });
+        const contents = await response.json();
+        contents.forEach(item => {
+            const elements = document.querySelectorAll('.' + item.selector) || 
+                           document.querySelectorAll(item.selector);
+            elements.forEach(element => {
+                element.innerHTML = item.content;
             });
-        }
+        });
     } catch (error) {
         console.error('Erreur de chargement:', error);
         showErrorIndicator('Erreur lors du chargement du contenu');
