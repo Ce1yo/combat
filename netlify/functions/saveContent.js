@@ -34,4 +34,29 @@ exports.handler = async (event) => {
     }
 
     // Mettre à jour le contenu
-    if (!siteContent
+    if (!siteContent[pagePath]) siteContent[pagePath] = {};
+    siteContent[pagePath][selector] = content;
+
+    // Sauvegarder le fichier
+    fs.writeFileSync(contentFilePath, JSON.stringify(siteContent, null, 2));
+
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      },
+      body: JSON.stringify({ success: true })
+    };
+  } catch (error) {
+    console.error('Save error:', error);
+    return {
+      statusCode: 500,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type'
+      },
+      body: JSON.stringify({ error: 'Failed to save content', details: error.message })
+    };
+  }
+};

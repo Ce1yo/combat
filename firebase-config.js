@@ -1,7 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getFirestore, doc, setDoc, getDoc, collection } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -30,4 +30,19 @@ onAuthStateChanged(auth, (user) => {
     console.log('État de l\'authentification changé:', user ? 'Utilisateur connecté' : 'Non connecté');
 });
 
-export { db, doc, setDoc, getDoc, collection, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut };
+// Fonction pour créer un utilisateur admin si nécessaire
+async function createAdminIfNeeded(email, password) {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('Utilisateur admin créé:', userCredential.user);
+        return userCredential;
+    } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+            console.log('L\'utilisateur existe déjà, tentative de connexion...');
+            return signInWithEmailAndPassword(auth, email, password);
+        }
+        throw error;
+    }
+}
+
+export { db, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createAdminIfNeeded };

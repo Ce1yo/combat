@@ -1,4 +1,4 @@
-import { db, doc, setDoc, getDoc, collection, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase-config.js';
+import { db, doc, setDoc, getDoc, collection, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createAdminIfNeeded } from './firebase-config.js';
 
 let isAdmin = false;
 let isEditing = false;
@@ -8,6 +8,11 @@ async function checkAdminStatus() {
     return new Promise((resolve) => {
         onAuthStateChanged(auth, (user) => {
             isAdmin = !!user;
+            if (user) {
+                document.body.classList.add('admin-mode');
+            } else {
+                document.body.classList.remove('admin-mode');
+            }
             resolve(!!user);
         });
     });
@@ -384,12 +389,12 @@ function createAdminLoginOverlay() {
         console.log('Email:', email);
 
         try {
-            console.log('Appel à signInWithEmailAndPassword...');
+            console.log('Tentative de connexion/création du compte admin...');
             console.log('Auth object:', auth);
             console.log('Email et password présents:', !!email, !!password);
 
-            const userCredential = await signInWithEmailAndPassword(auth, email, password);
-            console.log('Connexion réussie:', userCredential);
+            const userCredential = await createAdminIfNeeded(email, password);
+            console.log('Opération réussie:', userCredential);
             isAdmin = true;
             updateAdminButton();
             showSavedIndicator();
