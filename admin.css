@@ -366,7 +366,31 @@ body.admin-mode .admin-controls {
 .btn-submit:hover {
     background: #ff8533;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(255, 107, 0, 0.2);
+    box-shadow: 0 4px 8px rgba(255, 107, 0, 0.2);
+}
+
+.success-message {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #4CAF50;
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.3s ease-out;
+    z-index: 2000;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 /* Style pour l'onglet admin dans le menu */

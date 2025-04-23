@@ -3,6 +3,43 @@ import { db, collection, addDoc } from './firebase-config.js';
 // Collection des catégories dans Firestore
 const categoriesCollection = collection(db, 'categories');
 
+// Fonction pour créer une nouvelle catégorie
+async function createNewCategory(title, description, imageFile) {
+    try {
+        // Vérifier que tous les champs sont remplis
+        if (!title || !description || !imageFile) {
+            throw new Error('Tous les champs sont requis');
+        }
+
+        // Convertir l'image en Base64
+        const imageBase64 = await new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(imageFile);
+        });
+
+        // Créer l'objet catégorie
+        const newCategory = {
+            title: title,
+            description: description,
+            image: imageBase64,
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            articles: [] // Liste vide d'articles au départ
+        };
+
+        // Ajouter la catégorie à Firestore
+        const docRef = await addDoc(categoriesCollection, newCategory);
+        
+        // Retourner l'ID du document créé
+        return docRef.id;
+    } catch (error) {
+        console.error('Erreur lors de la création de la catégorie:', error);
+        throw error;
+    }
+}
+
 // Fonction pour ouvrir le formulaire d'ajout de catégorie
 window.showAddCategoryForm = function() {
     const overlay = document.getElementById('addCategoryForm');
@@ -102,41 +139,45 @@ document.addEventListener('DOMContentLoaded', () => {
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            // Récupérer les valeurs du formulaire
+            const title = document.getElementById('categoryTitle').value.trim();
+            const description = document.getElementById('categoryDescription').value.trim();
             const imageFile = document.getElementById('categoryImage').files[0];
-            if (!imageFile) {
-                alert('Veuillez sélectionner une image');
-                return;
-            }
+
+            // Afficher un spinner de chargement
+            const submitButton = form.querySelector('.btn-submit');
+            const originalButtonText = submitButton.textContent;
+            submitButton.disabled = true;
+            submitButton.textContent = 'Création en cours...';
 
             try {
-                // Convertir l'image en Base64
-                const reader = new FileReader();
-                reader.onload = async function(e) {
-                    const imageBase64 = e.target.result;
+                // Créer la nouvelle catégorie
+                await createNewCategory(title, description, imageFile);
 
-                    const newCategory = {
-                        title: document.getElementById('categoryTitle').value,
-                        description: document.getElementById('categoryDescription').value,
-                        image: imageBase64,
-                        createdAt: new Date().toISOString()
-                    };
+                // Afficher un message de succès
+                const successMessage = document.createElement('div');
+                successMessage.className = 'success-message';
+                successMessage.textContent = 'Catégorie créée avec succès !';
+                form.appendChild(successMessage);
 
-                    try {
-                        await addDoc(categoriesCollection, newCategory);
-                        alert('Catégorie ajoutée avec succès !');
-                        form.reset();
-                        closeAddCategoryForm();
-                        location.reload(); // Recharger la page pour afficher la nouvelle catégorie
-                    } catch (error) {
-                        console.error('Erreur lors de l\'ajout de la catégorie:', error);
-                        alert('Erreur lors de l\'ajout de la catégorie');
-                    }
-                };
+                // Réinitialiser le formulaire
+                form.reset();
+                document.getElementById('previewImg').style.display = 'none';
+                document.querySelector('.image-upload-container').classList.remove('has-image');
 
-                reader.readAsDataURL(imageFile);
+                // Fermer le formulaire après un court délai
+                setTimeout(() => {
+                    closeAddCategoryForm();
+                    location.reload(); // Recharger la page pour afficher la nouvelle catégorie
+                }, 1500);
+
             } catch (error) {
-                console.error('Erreur lors du traitement de l\'image:', error);
-                alert('Erreur lors du traitement de l\'image');
+                console.error('Erreur:', error);
+                alert(error.message || 'Une erreur est survenue lors de la création de la catégorie');
+            } finally {
+                // Rétablir le bouton
+                submitButton.disabled = false;
+                submitButton.textContent = originalButtonText;
             }
         });
     }

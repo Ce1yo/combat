@@ -10,4 +10,6 @@
   "dependencies": {
     "firebase": "^10.1.0",
     "firebase-admin": "^11.10.1",
-    "@netlify/funct
+    "@netlify/functions": "^2.0.0"
+  }
+}
