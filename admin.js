@@ -1,4 +1,4 @@
-import { SUPABASE_URL, SUPABASE_ANON_KEY } from './config.js';
+import config from './config.js';
 
 // Création de la barre d'outils d'édition
 function createEditorToolbar() {
@@ -105,10 +105,10 @@ async function saveContent(event) {
     const path = window.location.pathname;
 
     try {
-        const response = await fetch(`${SUPABASE_URL}/rest/v1/site_content`, {
+        const response = await fetch(`${config.url}/rest/v1/site_content`, {
             method: 'POST',
             headers: {
-                'apikey': SUPABASE_ANON_KEY,
+                'apikey': config.key,
                 'Content-Type': 'application/json',
                 'Prefer': 'resolution=merge-duplicates'
             },
@@ -159,9 +159,9 @@ async function loadSavedContent() {
     try {
         const currentPath = window.location.pathname;
         const response = await fetch(
-            `${SUPABASE_URL}/rest/v1/site_content?path=eq.${encodeURIComponent(currentPath)}`, {
+            `${config.url}/rest/v1/site_content?path=eq.${encodeURIComponent(currentPath)}`, {
             headers: {
-                'apikey': SUPABASE_ANON_KEY
+                'apikey': config.key
             }
         });
 
