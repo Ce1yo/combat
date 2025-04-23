@@ -1,3 +1,33 @@
+// Vérification de l'état de connexion admin
+function checkAdminStatus() {
+    return localStorage.getItem('isAdminLoggedIn') === 'true';
+}
+
+// Fonction de déconnexion
+function logout() {
+    localStorage.removeItem('isAdminLoggedIn');
+    window.location.reload();
+}
+
+// Ajout du bouton de connexion/déconnexion dans le header
+document.addEventListener('DOMContentLoaded', () => {
+    const header = document.querySelector('header');
+    if (header) {
+        const adminButton = document.createElement('button');
+        adminButton.className = 'admin-button';
+        if (checkAdminStatus()) {
+            adminButton.textContent = 'Déconnexion';
+            adminButton.onclick = logout;
+            // Ajouter la classe admin-mode au body
+            document.body.classList.add('admin-mode');
+        } else {
+            adminButton.textContent = 'Admin';
+            adminButton.onclick = () => window.location.href = 'admin.html';
+        }
+        header.appendChild(adminButton);
+    }
+});
+
 // Données des projets
 const projectsData = {
     // Projets personnels

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administration - Baptiste Celio</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .admin-login {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .admin-login input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .admin-login button {
+            width: 100%;
+            padding: 10px;
+            background: #000;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .admin-login button:hover {
+            background: #333;
+        }
+        .error-message {
+            color: red;
+            display: none;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-login">
+        <h2>Connexion Administration</h2>
+        <form id="adminForm" onsubmit="return handleLogin(event)">
+            <input type="text" id="username" placeholder="Nom d'utilisateur" required>
+            <input type="password" id="password" placeholder="Mot de passe" required>
+            <button type="submit">Se connecter</button>
+            <p id="errorMessage" class="error-message">Identifiants incorrects</p>
+        </form>
+    </div>
+
+    <script>
+        function handleLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            // Identifiants en dur pour la démonstration
+            // Dans un environnement réel, cela devrait être géré côté serveur
+            if (username === 'batou' && password === 'batou123') {
+                // Stockage de l'état de connexion
+                localStorage.setItem('isAdminLoggedIn', 'true');
+                // Redirection vers la page d'accueil
+                window.location.href = 'index.html';
+            } else {
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+            
+            return false;
+        }
+
+        // Vérification si déjà connecté
+        if (localStorage.getItem('isAdminLoggedIn') === 'true') {
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

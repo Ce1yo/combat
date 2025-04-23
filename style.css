@@ -1055,7 +1055,123 @@ main {
     font-weight: normal;
 }
 
+/* Styles pour le mode administrateur */
+.admin-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 8px 16px;
+    background: #000;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 1000;
+    font-family: 'AktivGrotesk', sans-serif;
+}
 
+.admin-button:hover {
+    background: #333;
+}
+
+/* Styles pour les éléments modifiables en mode admin */
+.admin-mode [contenteditable="true"] {
+    border: 1px dashed #000;
+    padding: 5px;
+    margin: -5px;
+    cursor: text;
+    position: relative;
+}
+
+.admin-mode [contenteditable="true"]:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.admin-mode [contenteditable="true"]:focus {
+    outline: 2px solid #000;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Style spécifique pour les textes blancs en mode édition */
+.admin-mode [style*="color: white"][contenteditable="true"]:focus,
+.admin-mode [style*="color: #fff"][contenteditable="true"]:focus,
+.admin-mode .hero-content [contenteditable="true"]:focus,
+.admin-mode .white-text[contenteditable="true"]:focus {
+    outline: 2px solid #fff;
+    background: rgba(0, 0, 0, 0.2);
+}
+
+/* Barre d'outils d'édition */
+.editor-toolbar {
+    position: fixed;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 8px;
+    display: none;
+    z-index: 1000;
+    gap: 4px;
+}
+
+.editor-toolbar.visible {
+    display: flex;
+}
+
+.editor-toolbar button {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.editor-toolbar button:hover {
+    background: #eee;
+}
+
+.editor-toolbar button.active {
+    background: #e0e0e0;
+    border-color: #bbb;
+}
+
+.editor-toolbar .separator {
+    width: 1px;
+    height: 20px;
+    background: #ddd;
+    margin: 0 4px;
+}
+
+/* Indicateur de modification */
+.content-modified {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #000;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    display: none;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+.content-modified.visible {
+    display: block;
+}
+
+.content-modified.error {
+    background: #ff3333;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
 
 .quote-image {
     position: absolute;
