@@ -24,18 +24,12 @@ const app = initializeApp(firebaseConfig);
 console.log('Firebase app initialisée:', app);
 
 // Configuration de Firestore avec CORS
-// Configuration de Firestore avec les options CORS
+// Configuration de Firestore
 const db = getFirestore(app);
 const settings = {
+  experimentalAutoDetectLongPolling: true,
   experimentalForceLongPolling: true,
-  useFetchStreams: false,
-  ignoreUndefinedProperties: true,
-  cache: 'default',
-  headers: {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE',
-    'Access-Control-Allow-Headers': 'Content-Type'
-  }
+  useFetchStreams: false
 };
 
 // Appliquer les paramètres à Firestore
