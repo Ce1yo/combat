@@ -79,9 +79,43 @@ function makeContentEditable() {
     // Fonction pour sauvegarder tous les éléments modifiés
     async function saveAllModifiedContent() {
         try {
-            for (const element of modifiedElements) {
-                await saveContent({ target: element });
-            }
+            const promises = Array.from(modifiedElements).map(element => {
+                const content = element.innerHTML;
+                const selector = Array.from(element.classList).join('.') || element.tagName.toLowerCase();
+                const path = window.location.pathname;
+
+                return fetch(
+                    `${SUPABASE_CONFIG.url}/rest/v1/site_content?path=eq.${encodeURIComponent(path)}&selector=eq.${encodeURIComponent(selector)}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.key
+                        }
+                    }
+                ).then(checkResponse => checkResponse.json())
+                .then(existingEntries => {
+                    const method = existingEntries.length > 0 ? 'PATCH' : 'POST';
+                    const url = existingEntries.length > 0 ?
+                        `${SUPABASE_CONFIG.url}/rest/v1/site_content?path=eq.${encodeURIComponent(path)}&selector=eq.${encodeURIComponent(selector)}` :
+                        `${SUPABASE_CONFIG.url}/rest/v1/site_content`;
+
+                    return fetch(url, {
+                        method: method,
+                        headers: {
+                            'apikey': SUPABASE_CONFIG.key,
+                            'Content-Type': 'application/json',
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({
+                            path,
+                            selector,
+                            content,
+                            updated_at: new Date().toISOString()
+                        })
+                    });
+                });
+            });
+
+            await Promise.all(promises);
             modifiedElements.clear();
             saveButton.style.display = 'none';
             showSavedIndicator();
@@ -134,9 +168,10 @@ function makeContentEditable() {
     });
 }
 
-// Fonction pour sauvegarder le contenu modifié
-async function saveContent(event) {
-    const element = event.target;
+// Fonction pour sauvegarder le contenu modifié (non utilisée directement)
+async function saveContent(element) {
+    if (!element) return;
+
     const content = element.innerHTML;
     const selector = Array.from(element.classList).join('.') || element.tagName.toLowerCase();
     const path = window.location.pathname;
