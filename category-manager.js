@@ -1,11 +1,37 @@
 import { db, collection, addDoc } from './firebase-config.js';
 
+// Imports Firebase
+import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
+
 // Collection des catégories dans Firestore
 const categoriesCollection = collection(db, 'categories');
+const adminsCollection = collection(db, 'admins');
+
+// Vérifier si l'utilisateur est admin
+async function checkAdminStatus(userId) {
+    try {
+        const adminDoc = await getDoc(doc(adminsCollection, userId));
+        return adminDoc.exists();
+    } catch (error) {
+        console.error('Erreur lors de la vérification du statut admin:', error);
+        return false;
+    }
+}
 
 // Fonction pour créer une nouvelle catégorie
 async function createNewCategory(title, description, imageFile) {
     try {
+        // Vérifier si l'utilisateur est connecté
+        const user = auth.currentUser;
+        if (!user) {
+            throw new Error('Vous devez être connecté pour créer une catégorie');
+        }
+
+        // Vérifier si l'utilisateur est admin
+        const isAdmin = await checkAdminStatus(user.uid);
+        if (!isAdmin) {
+            throw new Error('Vous devez être administrateur pour créer une catégorie');
+        }
         // Vérifier que tous les champs sont remplis
         if (!title || !description || !imageFile) {
             throw new Error('Tous les champs sont requis');
