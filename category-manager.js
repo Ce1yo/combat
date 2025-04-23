@@ -1,5 +1,4 @@
-import { db, auth } from './firebase-config.js';
-import { collection, addDoc, doc, getDoc } from 'firebase/firestore';
+import { db, auth, collection, addDoc, doc, getDoc } from './firebase-config.js';
 
 // Collection des catégories dans Firestore
 const categoriesCollection = collection(db, 'categories');
