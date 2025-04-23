@@ -113,12 +113,28 @@ async function saveContent(event) {
     const path = window.location.pathname;
 
     try {
-        const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/site_content`, {
-            method: 'POST',
+        // D'abord, vérifier si l'entrée existe
+        const checkResponse = await fetch(
+            `${SUPABASE_CONFIG.url}/rest/v1/site_content?path=eq.${encodeURIComponent(path)}&selector=eq.${encodeURIComponent(selector)}`,
+            {
+                headers: {
+                    'apikey': SUPABASE_CONFIG.key
+                }
+            }
+        );
+
+        const existingEntries = await checkResponse.json();
+        const method = existingEntries.length > 0 ? 'PATCH' : 'POST';
+        const url = existingEntries.length > 0 ?
+            `${SUPABASE_CONFIG.url}/rest/v1/site_content?path=eq.${encodeURIComponent(path)}&selector=eq.${encodeURIComponent(selector)}` :
+            `${SUPABASE_CONFIG.url}/rest/v1/site_content`;
+
+        const response = await fetch(url, {
+            method: method,
             headers: {
                 'apikey': SUPABASE_CONFIG.key,
                 'Content-Type': 'application/json',
-                'Prefer': 'resolution=merge-duplicates'
+                'Prefer': 'return=minimal'
             },
             body: JSON.stringify({
                 path,
