@@ -4,7 +4,12 @@
   "description": "Site web de Baptiste avec système d'administration",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "netlify dev"
   },
-  "dependencies": {}
+  "dependencies": {
+    "firebase": "^10.1.0",
+    "firebase-admin": "^11.10.1",
+    "@netlify/functions": "^2.0.0"
+  }
 }
