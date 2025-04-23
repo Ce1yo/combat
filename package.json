@@ -10,13 +10,4 @@
   },
   "dependencies": {
     "@netlify/functions": "^2.0.0",
-    "firebase": "^10.1.0",
-    "firebase-admin": "^11.10.1"
-  },
-  "devDependencies": {
-    "netlify-cli": "^17.0.0"
-  },
-  "engines": {
-    "node": ">=18.0.0"
-  }
-}
+    "
