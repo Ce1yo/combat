@@ -55,40 +55,69 @@ function makeContentEditable() {
 
     const toolbar = createEditorToolbar();
     let currentEditableElement = null;
+    let modifiedElements = new Set();
+
+    // Créer le bouton de sauvegarde
+    const saveButton = document.createElement('button');
+    saveButton.id = 'save-button';
+    saveButton.textContent = 'Sauvegarder les modifications';
+    saveButton.style.cssText = 'position: fixed; bottom: 20px; right: 120px; z-index: 1000; padding: 10px 20px; background: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; display: none;';
+    document.body.appendChild(saveButton);
 
     // Liste des sélecteurs d'éléments modifiables
     const editableSelectors = [
         '.project-title',
         '.project-description',
-        '.hero-content h1',
-        '.hero-content p',
-        '.about-content p',
-        '.section-title',
-        '.section-description',
-        '.footer p',
-        'h1, h2, h3, h4, h5, h6',
-        'p'
+        '.about-text',
+        '.contact-text',
+        'p',
+        'h1',
+        'h2',
+        'h3'
     ];
+
+    // Fonction pour sauvegarder tous les éléments modifiés
+    async function saveAllModifiedContent() {
+        try {
+            for (const element of modifiedElements) {
+                await saveContent({ target: element });
+            }
+            modifiedElements.clear();
+            saveButton.style.display = 'none';
+            showSavedIndicator();
+        } catch (error) {
+            console.error('Erreur lors de la sauvegarde:', error);
+            showErrorIndicator('Erreur lors de la sauvegarde');
+        }
+    }
+
+    // Ajouter le gestionnaire d'événements pour le bouton de sauvegarde
+    saveButton.addEventListener('click', saveAllModifiedContent);
 
     // Rendre les éléments modifiables
     editableSelectors.forEach(selector => {
         document.querySelectorAll(selector).forEach(element => {
-            element.setAttribute('contenteditable', 'true');
-            
-            element.addEventListener('focus', (e) => {
-                currentEditableElement = e.target;
-                toolbar.classList.add('visible');
-                positionToolbar(toolbar, e.target);
+            element.contentEditable = true;
+            element.classList.add('editable');
+
+            // Gestionnaire d'événements pour le focus
+            element.addEventListener('focus', () => {
+                currentEditableElement = element;
+                positionToolbar(toolbar, element);
+                toolbar.style.display = 'flex';
             });
 
-            element.addEventListener('blur', (e) => {
-                if (!e.relatedTarget || !e.relatedTarget.closest('.editor-toolbar')) {
-                    toolbar.classList.remove('visible');
-                    saveContent(e);
+            // Gestionnaire d'événements pour la perte de focus
+            element.addEventListener('blur', () => {
+                if (!toolbar.contains(document.activeElement)) {
+                    toolbar.style.display = 'none';
                 }
             });
 
+            // Gestionnaire d'événements pour les modifications
             element.addEventListener('input', () => {
+                modifiedElements.add(element);
+                saveButton.style.display = 'block';
                 showModifiedIndicator();
             });
         });
