@@ -107,8 +107,8 @@ function makeContentEditable() {
     // Fonction pour sauvegarder tous les éléments modifiés
     async function saveAllModifiedContent() {
         try {
-            const path = window.location.pathname;
-            const contentRef = doc(db, 'site-content', path);
+            const path = window.location.pathname.replace('/', '') || 'index';
+            const contentRef = doc(db, 'pages', path, 'content', 'data');
             const batch = {};
             
             Array.from(modifiedElements).forEach(element => {
@@ -260,8 +260,8 @@ function showSavedIndicator() {
 // Fonction pour charger le contenu sauvegardé
 async function loadSavedContent(showError = false) {
     try {
-        const path = window.location.pathname;
-        const contentRef = doc(db, 'site-content', path);
+        const path = window.location.pathname.replace('/', '') || 'index';
+        const contentRef = doc(db, 'pages', path, 'content', 'data');
         const docSnap = await getDoc(contentRef);
 
         if (docSnap.exists()) {
