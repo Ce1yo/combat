@@ -107,29 +107,34 @@ async function makeContentEditable() {
         '.home-hero h1',
         
         // Values section
-        '.values-section h2',
-        '.values-section .section-intro',
-        '.value-card h3',
-        '.value-card p',
+        '.values-section > h2:first-of-type',
+        '.values-section > .section-intro',
+        '.value-card:nth-child(1) h3',
+        '.value-card:nth-child(1) p',
+        '.value-card:nth-child(2) h3',
+        '.value-card:nth-child(2) p',
+        '.value-card:nth-child(3) h3',
+        '.value-card:nth-child(3) p',
+        '.value-card:nth-child(3) .text-link',
         
         // Portfolio section
-        '.portfolio-content h2',
-        '.portfolio-text p',
-        '.slide-title[data-project="1"]',
-        '.slide-description[data-project="1"]',
-        '.slide-title[data-project="2"]',
-        '.slide-description[data-project="2"]',
-        '.slide-title[data-project="3"]',
-        '.slide-description[data-project="3"]',
+        '.portfolio-content > h2',
+        '.portfolio-text > p',
+        '.slide:nth-child(1) .slide-title[data-project="1"]',
+        '.slide:nth-child(1) .slide-description[data-project="1"]',
+        '.slide:nth-child(2) .slide-title[data-project="2"]',
+        '.slide:nth-child(2) .slide-description[data-project="2"]',
+        '.slide:nth-child(3) .slide-title[data-project="3"]',
+        '.slide:nth-child(3) .slide-description[data-project="3"]',
         
         // Social section
-        '.social-section h2',
-        '.social-content p',
+        '.social-section > h2',
+        '.social-content > p',
         
         // Footer
-        '.contact-info h3',
-        '.contact-info p',
-        '.contact-info a'
+        '.contact-info > h3',
+        '.contact-info > p',
+        '.contact-info > a'
     ];
 
     // Rendre les éléments éditables uniquement si admin
@@ -348,29 +353,57 @@ function showErrorIndicator(message = 'Erreur lors de la sauvegarde') {
     }, 3000);
 }
 
+// Fonction pour créer l'overlay de connexion admin
+function createAdminLoginOverlay() {
+    const overlay = document.createElement('div');
+    overlay.className = 'admin-overlay';
+    overlay.innerHTML = `
+        <form class="admin-login-form" onsubmit="return false;">
+            <button type="button" class="close-admin-login">&times;</button>
+            <h2>Connexion Admin</h2>
+            <input type="email" id="admin-email" placeholder="Email admin" required>
+            <input type="password" id="admin-password" placeholder="Mot de passe" required>
+            <button type="submit">Se connecter</button>
+        </form>
+    `;
+
+    document.body.appendChild(overlay);
+
+    const form = overlay.querySelector('form');
+    const closeButton = overlay.querySelector('.close-admin-login');
+
+    closeButton.addEventListener('click', () => {
+        overlay.style.display = 'none';
+    });
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = form.querySelector('#admin-email').value;
+        const password = form.querySelector('#admin-password').value;
+
+        try {
+            await signInWithEmailAndPassword(auth, email, password);
+            showSavedIndicator();
+            makeContentEditable();
+            overlay.style.display = 'none';
+        } catch (error) {
+            console.error('Erreur de connexion:', error);
+            showErrorIndicator('Erreur de connexion : ' + error.message);
+        }
+    });
+
+    return overlay;
+}
+
 // Fonction pour gérer la connexion admin
 async function handleAdminLogin() {
     if (isAdmin) {
-        handleLogout();
+        await handleLogout();
         return;
     }
 
-    try {
-        const email = prompt('Email administrateur :');
-        if (!email) return;
-
-        const password = prompt('Mot de passe :');
-        if (!password) return;
-
-        await signInWithEmailAndPassword(auth, email, password);
-        isAdmin = true;
-        makeContentEditable();
-        loadSavedContent();
-        updateAdminButton();
-    } catch (error) {
-        console.error('Erreur de connexion:', error);
-        alert('Email ou mot de passe incorrect');
-    }
+    const overlay = document.querySelector('.admin-overlay') || createAdminLoginOverlay();
+    overlay.style.display = 'flex';
 }
 
 // Fonction pour actualiser périodiquement le contenu et vérifier les permissions
