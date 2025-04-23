@@ -6,7 +6,5 @@
   "scripts": {
     "start": "node server.js"
   },
-  "dependencies": {
-    "node-json-db": "^2.3.0"
-  }
+  "dependencies": {}
 }
