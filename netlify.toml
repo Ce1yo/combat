@@ -8,8 +8,10 @@
   external_node_modules = ["fs", "path"]
 
 [dev]
+  framework = "#static"
   command = "npm run dev"
   targetPort = 8888
+  port = 8888
   publish = "/"
   autoLaunch = true
 
@@ -22,6 +24,14 @@
   from = "/*"
   to = "/index.html"
   status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Methods = "GET, POST, PUT, DELETE, OPTIONS"
+    Access-Control-Allow-Headers = "Content-Type"
+    Access-Control-Max-Age = "86400"
 
 [[headers]]
   for = "/*"
