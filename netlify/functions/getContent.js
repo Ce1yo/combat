@@ -1,4 +1,7 @@
-exports.handler = async (event, context) => {
+const fs = require('fs');
+const path = require('path');
+
+exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -12,17 +15,14 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // Récupérer toutes les clés qui commencent par 'content_'
-    const keys = await context.store.list({ prefix: 'content_' });
-    const content = {};
-
-    // Récupérer le contenu pour chaque clé
-    for (const key of keys) {
-      const value = await context.store.get(key);
-      const [, path, selector] = key.split('_');
-      
-      if (!content[path]) content[path] = {};
-      content[path][selector] = value;
+    const contentFilePath = path.join(__dirname, '../../content/site-content.json');
+    
+    // Lire le fichier de contenu
+    let content = {};
+    try {
+      content = JSON.parse(fs.readFileSync(contentFilePath, 'utf8'));
+    } catch (err) {
+      if (err.code !== 'ENOENT') throw err;
     }
 
     return {

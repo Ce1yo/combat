@@ -1,4 +1,7 @@
-exports.handler = async (event, context) => {
+const fs = require('fs');
+const path = require('path');
+
+exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') {
     return {
       statusCode: 200,
@@ -19,11 +22,23 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    const { path, selector, content } = JSON.parse(event.body);
-    const key = `content_${path}_${selector}`;
+    const { path: pagePath, selector, content } = JSON.parse(event.body);
+    const contentFilePath = path.join(__dirname, '../../content/site-content.json');
+    
+    // Lire le fichier existant
+    let siteContent = {};
+    try {
+      siteContent = JSON.parse(fs.readFileSync(contentFilePath, 'utf8'));
+    } catch (err) {
+      if (err.code !== 'ENOENT') throw err;
+    }
 
-    // Utilisation de l'API KV Store de Netlify
-    await context.store.set(key, content);
+    // Mettre à jour le contenu
+    if (!siteContent[pagePath]) siteContent[pagePath] = {};
+    siteContent[pagePath][selector] = content;
+
+    // Sauvegarder le fichier
+    fs.writeFileSync(contentFilePath, JSON.stringify(siteContent, null, 2));
 
     return {
       statusCode: 200,
