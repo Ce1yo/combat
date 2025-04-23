@@ -25,16 +25,11 @@ console.log('Firebase app initialisée:', app);
 
 // Configuration de Firestore avec CORS
 // Configuration de Firestore
-const db = getFirestore(app);
-const settings = {
-  experimentalAutoDetectLongPolling: true,
+const db = initializeFirestore(app, {
   experimentalForceLongPolling: true,
-  useFetchStreams: false
-};
-
-// Appliquer les paramètres à Firestore
-const firestoreWithSettings = getFirestore(app);
-firestoreWithSettings._settings = settings;
+  useFetchStreams: false,
+  ignoreUndefinedProperties: true
+});
 console.log('Firestore initialisé');
 
 const auth = getAuth(app);
@@ -46,21 +41,11 @@ onAuthStateChanged(auth, async (user) => {
         console.log('État de l\'authentification changé: Utilisateur connecté');
         // Vérifier si l'utilisateur est admin
         try {
-            const adminDoc = await getDoc(doc(db, 'admins', user.uid));
-            if (adminDoc.exists()) {
+            const isAdmin = await checkAdminStatus(user);
+            if (isAdmin) {
                 console.log('Utilisateur est admin');
             } else {
                 console.log('Utilisateur n\'est pas admin');
-                // Créer le document admin pour l'utilisateur actuel
-                try {
-                    await setDoc(doc(db, 'admins', user.uid), {
-                        email: user.email,
-                        role: 'admin'
-                    });
-                    console.log('Document admin créé avec succès');
-                } catch (error) {
-                    console.error('Erreur lors de la création du document admin:', error);
-                }
             }
         } catch (error) {
             console.error('Erreur lors de la vérification du statut admin:', error);
