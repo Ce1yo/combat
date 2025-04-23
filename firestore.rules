@@ -1,9 +1,30 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /pages/{pageId}/content/{docId} {
+    // Fonction pour vérifier si l'utilisateur est connecté
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    // Fonction pour vérifier si l'utilisateur est admin
+    function isAdmin() {
+      return isAuthenticated() && 
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+    
+    // Règles pour la collection categories
+    match /categories/{categoryId} {
+      // Lecture publique
       allow read: if true;
-      allow write: if request.auth != null;
+      
+      // Seuls les admins peuvent créer, modifier ou supprimer
+      allow create, update, delete: if isAdmin();
+    }
+    
+    // Règles pour la collection admins
+    match /admins/{userId} {
+      allow read: if isAuthenticated() && request.auth.uid == userId;
+      allow write: if false; // Seul via la console Firebase
     }
   }
 }

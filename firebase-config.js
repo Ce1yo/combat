@@ -10,4 +10,39 @@ const firebaseConfig = {
   projectId: "esprit-combat",
   storageBucket: "esprit-combat.firebasestorage.app",
   messagingSenderId: "363429643930",
-  appId: "1:363429643930:web:e5
+  appId: "1:363429643930:web:e53c3950caac81bc994123",
+  measurementId: "G-6YRWHECNLK"
+};
+
+// Initialize Firebase
+console.log('Initialisation de Firebase...');
+const app = initializeApp(firebaseConfig);
+console.log('Firebase app initialisée:', app);
+
+const db = getFirestore(app);
+console.log('Firestore initialisé');
+
+const auth = getAuth(app);
+console.log('Auth initialisé');
+
+// Vérifier l'état de l'authentification
+onAuthStateChanged(auth, (user) => {
+    console.log('État de l\'authentification changé:', user ? 'Utilisateur connecté' : 'Non connecté');
+});
+
+// Fonction pour créer un utilisateur admin si nécessaire
+async function createAdminIfNeeded(email, password) {
+    try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        console.log('Utilisateur admin créé:', userCredential.user);
+        return userCredential;
+    } catch (error) {
+        if (error.code === 'auth/email-already-in-use') {
+            console.log('L\'utilisateur existe déjà, tentative de connexion...');
+            return signInWithEmailAndPassword(auth, email, password);
+        }
+        throw error;
+    }
+}
+
+export { db, doc, setDoc, getDoc, collection, addDoc, getDocs, deleteDoc, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut, createAdminIfNeeded };
