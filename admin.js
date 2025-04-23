@@ -420,62 +420,106 @@ function startAutoRefresh() {
     setInterval(checkPermissionsAndLoad, 30000);
 }
 
-// Style pour le mode admin
-const style = document.createElement('style');
-style.textContent = `
-    .editable {
-        outline: 2px dashed #4CAF50;
-        position: relative;
-    }
-    .editable:hover {
-        outline: 2px solid #4CAF50;
-        background: rgba(76, 175, 80, 0.1);
-    }
-    [contenteditable="false"] {
-        outline: none !important;
-        background: none !important;
-        cursor: default !important;
-    }
-    #admin-button {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        z-index: 1000;
-        padding: 10px 20px;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        font-weight: bold;
-        transition: all 0.3s ease;
-    }
-    #admin-button:hover {
-        transform: scale(1.05);
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-`;
-document.head.appendChild(style);
-
-// Initialisation
-document.addEventListener('DOMContentLoaded', () => {
-    // Créer le bouton admin s'il n'existe pas
+// Créer le bouton admin immédiatement
+function createAdminButton() {
     if (!document.querySelector('#admin-button')) {
         const adminButton = document.createElement('button');
         adminButton.id = 'admin-button';
         adminButton.textContent = 'Mode Admin';
         adminButton.addEventListener('click', handleAdminLogin);
         document.body.appendChild(adminButton);
+        updateAdminButton();
+    }
+}
+
+// Style pour le mode admin
+const style = document.createElement('style');
+style.textContent = `
+    .editable {
+        position: relative;
+        outline: 1px dashed #ccc;
+        padding: 5px;
+        min-height: 20px;
+        transition: outline-color 0.3s ease;
     }
 
-    // Vérifier l'état de connexion et mettre à jour l'interface
-    onAuthStateChanged(auth, (user) => {
-        isAdmin = !!user;
-        updateAdminButton();
-        if (isAdmin) {
-            makeContentEditable();
-        }
-    });
+    .editable:hover {
+        outline-color: #4CAF50;
+    }
 
-    // Démarrer l'actualisation automatique pour tous les utilisateurs
-    startAutoRefresh();
+    .editable:focus {
+        outline: 2px solid #4CAF50;
+    }
+
+    .editor-toolbar {
+        position: absolute;
+        display: none;
+        background: #333;
+        padding: 5px;
+        border-radius: 3px;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        z-index: 1000;
+    }
+
+    .editor-toolbar button {
+        background: none;
+        border: none;
+        color: white;
+        padding: 5px 10px;
+        cursor: pointer;
+        margin: 0 2px;
+    }
+
+    .editor-toolbar button:hover {
+        background: #444;
+    }
+
+    .editor-toolbar .separator {
+        display: inline-block;
+        width: 1px;
+        height: 20px;
+        background: #666;
+        margin: 0 5px;
+        vertical-align: middle;
+    }
+
+    .status-indicator {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 10px 20px;
+        border-radius: 5px;
+        color: white;
+        z-index: 1001;
+        animation: fadeInOut 3s ease forwards;
+    }
+
+    @keyframes fadeInOut {
+        0% { opacity: 0; transform: translateY(-20px); }
+        10% { opacity: 1; transform: translateY(0); }
+        90% { opacity: 1; transform: translateY(0); }
+        100% { opacity: 0; transform: translateY(-20px); }
+    }
+`;
+
+document.head.appendChild(style);
+
+// Créer le bouton admin dès que possible
+createAdminButton();
+
+// S'assurer que le bouton est créé même si le script est chargé après le DOM
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', createAdminButton);
+}
+
+// Vérifier l'état de connexion et mettre à jour l'interface
+onAuthStateChanged(auth, (user) => {
+    isAdmin = !!user;
+    updateAdminButton();
+    if (isAdmin) {
+        makeContentEditable();
+    }
 });
+
+// Démarrer l'actualisation automatique pour tous les utilisateurs
+startAutoRefresh();
