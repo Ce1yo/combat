@@ -1,3 +1,16 @@
+let isAdmin = false;
+let isEditing = false;
+
+// Vérifier si l'utilisateur est admin
+function checkAdminStatus() {
+    const password = localStorage.getItem('adminPassword');
+    if (password === 'votre_mot_de_passe_admin') {
+        isAdmin = true;
+        return true;
+    }
+    return false;
+}
+
 // Création de la barre d'outils d'édition
 function createEditorToolbar() {
     const toolbar = document.createElement('div');
@@ -189,10 +202,31 @@ function showErrorIndicator(message = 'Erreur lors de la sauvegarde') {
     }, 3000);
 }
 
+// Fonction pour gérer la connexion admin
+function handleAdminLogin() {
+    const password = prompt('Entrez le mot de passe administrateur :');
+    if (password === 'votre_mot_de_passe_admin') {
+        localStorage.setItem('adminPassword', password);
+        isAdmin = true;
+        makeContentEditable();
+        loadSavedContent();
+    } else {
+        alert('Mot de passe incorrect');
+    }
+}
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
+    // Ajouter le bouton de connexion admin
+    const adminButton = document.createElement('button');
+    adminButton.textContent = 'Admin';
+    adminButton.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer;';
+    document.body.appendChild(adminButton);
+
+    adminButton.addEventListener('click', handleAdminLogin);
+
     if (checkAdminStatus()) {
         makeContentEditable();
+        loadSavedContent();
     }
-    loadSavedContent();
 });
