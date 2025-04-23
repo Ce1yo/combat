@@ -15,8 +15,19 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
+console.log('Initialisation de Firebase...');
 const app = initializeApp(firebaseConfig);
+console.log('Firebase app initialisée:', app);
+
 const db = getFirestore(app);
+console.log('Firestore initialisé');
+
 const auth = getAuth(app);
+console.log('Auth initialisé');
+
+// Vérifier l'état de l'authentification
+onAuthStateChanged(auth, (user) => {
+    console.log('État de l\'authentification changé:', user ? 'Utilisateur connecté' : 'Non connecté');
+});
 
 export { db, doc, setDoc, getDoc, collection, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut };

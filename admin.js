@@ -378,17 +378,45 @@ function createAdminLoginOverlay() {
 
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
+        console.log('Tentative de connexion...');
         const email = form.querySelector('#admin-email').value;
         const password = form.querySelector('#admin-password').value;
+        console.log('Email:', email);
 
         try {
-            await signInWithEmailAndPassword(auth, email, password);
+            console.log('Appel à signInWithEmailAndPassword...');
+            console.log('Auth object:', auth);
+            console.log('Email et password présents:', !!email, !!password);
+
+            const userCredential = await signInWithEmailAndPassword(auth, email, password);
+            console.log('Connexion réussie:', userCredential);
+            isAdmin = true;
+            updateAdminButton();
             showSavedIndicator();
             makeContentEditable();
             overlay.style.display = 'none';
+            location.reload(); // Recharger la page pour mettre à jour l'interface
         } catch (error) {
-            console.error('Erreur de connexion:', error);
-            showErrorIndicator('Erreur de connexion : ' + error.message);
+            console.error('Erreur de connexion détaillée:', {
+                code: error.code,
+                message: error.message,
+                stack: error.stack
+            });
+            let errorMessage = 'Erreur de connexion';
+            switch(error.code) {
+                case 'auth/invalid-email':
+                    errorMessage = 'Adresse email invalide';
+                    break;
+                case 'auth/user-not-found':
+                    errorMessage = 'Utilisateur non trouvé';
+                    break;
+                case 'auth/wrong-password':
+                    errorMessage = 'Mot de passe incorrect';
+                    break;
+                default:
+                    errorMessage = `Erreur: ${error.message}`;
+            }
+            showErrorIndicator(errorMessage);
         }
     });
 
@@ -431,6 +459,16 @@ function createAdminButton() {
         updateAdminButton();
     }
 }
+
+// Initialiser l'interface admin au chargement de la page
+document.addEventListener('DOMContentLoaded', () => {
+    createAdminButton();
+    checkAdminStatus().then(isAdmin => {
+        if (isAdmin) {
+            makeContentEditable();
+        }
+    });
+});
 
 // Style pour le mode admin
 const style = document.createElement('style');

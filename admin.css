@@ -1,3 +1,44 @@
+/* Style pour l'onglet admin dans le menu */
+.admin-nav-item {
+    display: none; /* Caché par défaut, visible uniquement en mode admin */
+}
+
+body.admin-mode .admin-nav-item {
+    display: list-item;
+}
+
+.admin-nav-item a.active {
+    color: var(--primary-color);
+}
+
+/* Style pour la section admin */
+.admin-section {
+    padding: 4rem 2rem;
+    background-color: var(--background-color);
+    min-height: calc(100vh - 200px);
+}
+
+.admin-content {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.admin-content h1 {
+    font-family: 'AktivGrotesk', sans-serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+}
+
+.admin-panel {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px var(--card-shadow);
+}
+
+/* Style pour l'overlay de connexion */
 .admin-overlay {
     position: fixed;
     top: 0;
@@ -87,9 +128,11 @@
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    font-size: 0.9rem;
+    font-size: 1rem;
+    font-weight: bold;
     z-index: 1000;
-    transition: background 0.3s ease;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 #admin-button:hover {
