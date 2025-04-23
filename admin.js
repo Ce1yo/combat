@@ -102,14 +102,30 @@ async function makeContentEditable() {
 
     // Liste des sélecteurs d'éléments modifiables
     const editableSelectors = [
-        '.project-title',
-        '.project-description',
-        '.about-text',
-        '.contact-text',
-        'p',
-        'h1',
-        'h2',
-        'h3'
+        // Hero section
+        '.home-hero .hero-text p',
+        '.home-hero h1',
+        
+        // Values section
+        '.values-section h2',
+        '.values-section .section-intro',
+        '.value-card h3',
+        '.value-card p',
+        
+        // Portfolio section
+        '.portfolio-content h2',
+        '.portfolio-text p',
+        '.slide-title',
+        '.slide-description',
+        
+        // Social section
+        '.social-section h2',
+        '.social-content p',
+        
+        // Footer
+        '.contact-info h3',
+        '.contact-info p',
+        '.contact-info a'
     ];
 
     // Rendre les éléments éditables uniquement si admin
