@@ -1,14 +1,16 @@
+import { db, doc, setDoc, getDoc, collection, auth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from './firebase-config.js';
+
 let isAdmin = false;
 let isEditing = false;
 
 // Vérifier si l'utilisateur est admin
-function checkAdminStatus() {
-    const password = localStorage.getItem('adminPassword');
-    if (password === '1234') {
-        isAdmin = true;
-        return true;
-    }
-    return false;
+async function checkAdminStatus() {
+    return new Promise((resolve) => {
+        onAuthStateChanged(auth, (user) => {
+            isAdmin = !!user;
+            resolve(!!user);
+        });
+    });
 }
 
 function updateAdminButton() {
@@ -26,11 +28,15 @@ function updateAdminButton() {
     }
 }
 
-function handleLogout() {
-    localStorage.removeItem('adminPassword');
-    isAdmin = false;
-    updateAdminButton();
-    location.reload();
+async function handleLogout() {
+    try {
+        await signOut(auth);
+        isAdmin = false;
+        updateAdminButton();
+        location.reload();
+    } catch (error) {
+        console.error('Erreur de déconnexion:', error);
+    }
 }
 
 // Création de la barre d'outils d'édition
@@ -101,43 +107,21 @@ function makeContentEditable() {
     // Fonction pour sauvegarder tous les éléments modifiés
     async function saveAllModifiedContent() {
         try {
-            const promises = Array.from(modifiedElements).map(element => {
+            const path = window.location.pathname;
+            const contentRef = doc(db, 'site-content', path);
+            const batch = {};
+            
+            Array.from(modifiedElements).forEach(element => {
                 const content = element.innerHTML;
-                const selector = Array.from(element.classList).join('.') || element.tagName.toLowerCase();
-                const path = window.location.pathname;
-
-                return fetch(
-                    `${SUPABASE_CONFIG.url}/rest/v1/site_content?path=eq.${encodeURIComponent(path)}&selector=eq.${encodeURIComponent(selector)}`,
-                    {
-                        headers: {
-                            'apikey': SUPABASE_CONFIG.key
-                        }
-                    }
-                ).then(checkResponse => checkResponse.json())
-                .then(existingEntries => {
-                    const method = existingEntries.length > 0 ? 'PATCH' : 'POST';
-                    const url = existingEntries.length > 0 ?
-                        `${SUPABASE_CONFIG.url}/rest/v1/site_content?path=eq.${encodeURIComponent(path)}&selector=eq.${encodeURIComponent(selector)}` :
-                        `${SUPABASE_CONFIG.url}/rest/v1/site_content`;
-
-                    return fetch(url, {
-                        method: method,
-                        headers: {
-                            'apikey': SUPABASE_CONFIG.key,
-                            'Content-Type': 'application/json',
-                            'Prefer': 'return=minimal'
-                        },
-                        body: JSON.stringify({
-                            path,
-                            selector,
-                            content,
-                            updated_at: new Date().toISOString()
-                        })
-                    });
-                });
+                const selector = element.getAttribute('data-original-selector');
+                
+                batch[selector] = {
+                    content,
+                    updated_at: new Date().toISOString()
+                };
             });
 
-            await Promise.all(promises);
+            await setDoc(contentRef, batch, { merge: true });
             modifiedElements.clear();
             saveButton.style.display = 'none';
             showSavedIndicator();
@@ -153,29 +137,35 @@ function makeContentEditable() {
     // Rendre les éléments modifiables
     editableSelectors.forEach(selector => {
         document.querySelectorAll(selector).forEach(element => {
-            element.contentEditable = true;
-            element.classList.add('editable');
+            // Vérifier si l'élément a du contenu
+            if (element.textContent.trim()) {
+                element.contentEditable = true;
+                element.classList.add('editable');
 
-            // Gestionnaire d'événements pour le focus
-            element.addEventListener('focus', () => {
-                currentEditableElement = element;
-                positionToolbar(toolbar, element);
-                toolbar.style.display = 'flex';
-            });
+                // Ajouter un attribut data-original-selector pour la sauvegarde
+                element.setAttribute('data-original-selector', selector);
 
-            // Gestionnaire d'événements pour la perte de focus
-            element.addEventListener('blur', () => {
-                if (!toolbar.contains(document.activeElement)) {
-                    toolbar.style.display = 'none';
-                }
-            });
+                // Gestionnaire d'événements pour le focus
+                element.addEventListener('focus', () => {
+                    currentEditableElement = element;
+                    positionToolbar(toolbar, element);
+                    toolbar.style.display = 'flex';
+                });
 
-            // Gestionnaire d'événements pour les modifications
-            element.addEventListener('input', () => {
-                modifiedElements.add(element);
-                saveButton.style.display = 'block';
-                showModifiedIndicator();
-            });
+                // Gestionnaire d'événements pour la perte de focus
+                element.addEventListener('blur', () => {
+                    if (!toolbar.contains(document.activeElement)) {
+                        toolbar.style.display = 'none';
+                    }
+                });
+
+                // Gestionnaire d'événements pour les modifications
+                element.addEventListener('input', () => {
+                    modifiedElements.add(element);
+                    saveButton.style.display = 'block';
+                    showModifiedIndicator();
+                });
+            }
         });
     });
 
@@ -270,29 +260,21 @@ function showSavedIndicator() {
 // Fonction pour charger le contenu sauvegardé
 async function loadSavedContent(showError = false) {
     try {
-        const currentPath = window.location.pathname;
-        const response = await fetch(
-            `${SUPABASE_CONFIG.url}/rest/v1/site_content?path=eq.${encodeURIComponent(currentPath)}`, {
-            headers: {
-                'apikey': SUPABASE_CONFIG.key
-            }
-        });
+        const path = window.location.pathname;
+        const contentRef = doc(db, 'site-content', path);
+        const docSnap = await getDoc(contentRef);
 
-        if (!response.ok) throw new Error('Erreur lors du chargement');
-        
-        const contents = await response.json();
-        contents.forEach(item => {
-            const elements = document.querySelectorAll('.' + item.selector) || 
-                           document.querySelectorAll(item.selector);
-            elements.forEach(element => {
-                // Ne pas mettre à jour si l'élément est en cours d'édition
-                if (!element.isContentEditable) {
-                    element.innerHTML = item.content;
-                }
+        if (docSnap.exists()) {
+            const savedContent = docSnap.data();
+            Object.entries(savedContent).forEach(([selector, data]) => {
+                const elements = document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    element.innerHTML = data.content;
+                });
             });
-        });
+        }
     } catch (error) {
-        console.error('Erreur de chargement:', error);
+        console.error('Erreur lors du chargement du contenu:', error);
         if (showError) {
             showErrorIndicator('Erreur lors du chargement du contenu');
         }
@@ -313,23 +295,27 @@ function showErrorIndicator(message = 'Erreur lors de la sauvegarde') {
 }
 
 // Fonction pour gérer la connexion admin
-function handleAdminLogin() {
+async function handleAdminLogin() {
     if (isAdmin) {
-        if (confirm('Voulez-vous vous déconnecter ?')) {
-            handleLogout();
-        }
+        handleLogout();
         return;
     }
 
-    const password = prompt('Entrez le mot de passe administrateur :');
-    if (password === '1234') {
-        localStorage.setItem('adminPassword', password);
+    try {
+        const email = prompt('Email administrateur :');
+        if (!email) return;
+
+        const password = prompt('Mot de passe :');
+        if (!password) return;
+
+        await signInWithEmailAndPassword(auth, email, password);
         isAdmin = true;
         makeContentEditable();
         loadSavedContent();
         updateAdminButton();
-    } else {
-        alert('Mot de passe incorrect');
+    } catch (error) {
+        console.error('Erreur de connexion:', error);
+        alert('Email ou mot de passe incorrect');
     }
 }
 
