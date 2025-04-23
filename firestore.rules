@@ -1,27 +1,8 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Fonction pour vérifier si l'utilisateur est connecté
-    function isAuthenticated() {
-      return request.auth != null;
-    }
-    
-    // Fonction pour vérifier si l'utilisateur est admin
-    function isAdmin() {
-      return isAuthenticated();
-    }
-    
-    // Règles pour la collection categories
-    match /categories/{categoryId} {
-      // Lecture publique
-      allow read: if true;
-      // Seuls les utilisateurs connectés peuvent créer, modifier ou supprimer
-      allow create, update, delete: if isAuthenticated();
-    }
-    
-    // Règles pour la collection admins
-    match /admins/{userId} {
-      allow read, write: if isAuthenticated() && request.auth.uid == userId;
+    match /{document=**} {
+      allow read, write: if true;
     }
   }
 }
