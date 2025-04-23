@@ -107,6 +107,10 @@ function makeContentEditable() {
     // Fonction pour sauvegarder tous les éléments modifiés
     async function saveAllModifiedContent() {
         try {
+            if (!auth.currentUser) {
+                throw new Error('Vous devez être connecté pour sauvegarder les modifications');
+            }
+
             const path = window.location.pathname.replace('/', '') || 'index';
             const contentRef = doc(db, 'pages', path, 'content', 'data');
             const batch = {};
@@ -117,7 +121,8 @@ function makeContentEditable() {
                 
                 batch[selector] = {
                     content,
-                    updated_at: new Date().toISOString()
+                    updated_at: new Date().toISOString(),
+                    updatedBy: auth.currentUser.email
                 };
             });
 
@@ -127,7 +132,13 @@ function makeContentEditable() {
             showSavedIndicator();
         } catch (error) {
             console.error('Erreur lors de la sauvegarde:', error);
-            showErrorIndicator('Erreur lors de la sauvegarde');
+            const message = error.code === 'permission-denied' 
+                ? 'Vous n\'avez pas les permissions nécessaires. Veuillez vous reconnecter.'
+                : 'Erreur lors de la sauvegarde: ' + error.message;
+            showErrorIndicator(message);
+            if (error.code === 'permission-denied') {
+                setTimeout(() => handleLogout(), 2000);
+            }
         }
     }
 
