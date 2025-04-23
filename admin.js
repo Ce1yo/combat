@@ -136,7 +136,10 @@ async function saveContent(event) {
                 'Content-Type': 'application/json',
                 'Prefer': 'return=minimal'
             },
-            body: JSON.stringify({
+            body: JSON.stringify(method === 'PATCH' ? {
+                content,
+                updated_at: new Date().toISOString()
+            } : {
                 path,
                 selector,
                 content,
@@ -179,7 +182,7 @@ function showSavedIndicator() {
 }
 
 // Fonction pour charger le contenu sauvegardé
-async function loadSavedContent() {
+async function loadSavedContent(showError = false) {
     try {
         const currentPath = window.location.pathname;
         const response = await fetch(
@@ -196,12 +199,17 @@ async function loadSavedContent() {
             const elements = document.querySelectorAll('.' + item.selector) || 
                            document.querySelectorAll(item.selector);
             elements.forEach(element => {
-                element.innerHTML = item.content;
+                // Ne pas mettre à jour si l'élément est en cours d'édition
+                if (!element.isContentEditable) {
+                    element.innerHTML = item.content;
+                }
             });
         });
     } catch (error) {
         console.error('Erreur de chargement:', error);
-        showErrorIndicator('Erreur lors du chargement du contenu');
+        if (showError) {
+            showErrorIndicator('Erreur lors du chargement du contenu');
+        }
     }
 }
 
@@ -231,18 +239,32 @@ function handleAdminLogin() {
     }
 }
 
+// Fonction pour actualiser périodiquement le contenu
+function startAutoRefresh() {
+    // Charger le contenu immédiatement
+    loadSavedContent();
+    
+    // Actualiser toutes les 30 secondes
+    setInterval(loadSavedContent, 30000);
+}
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
-    // Ajouter le bouton de connexion admin
-    const adminButton = document.createElement('button');
-    adminButton.textContent = 'Admin';
-    adminButton.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer;';
-    document.body.appendChild(adminButton);
+    // Vérifier si le bouton admin existe déjà
+    if (!document.querySelector('#admin-button')) {
+        const adminButton = document.createElement('button');
+        adminButton.id = 'admin-button';
+        adminButton.textContent = 'Admin';
+        adminButton.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 1000; padding: 10px 20px; background: #333; color: white; border: none; border-radius: 5px; cursor: pointer;';
+        document.body.appendChild(adminButton);
+        adminButton.addEventListener('click', handleAdminLogin);
+    }
 
-    adminButton.addEventListener('click', handleAdminLogin);
-
+    // Rendre le contenu modifiable si admin
     if (checkAdminStatus()) {
         makeContentEditable();
-        loadSavedContent();
     }
+
+    // Démarrer l'actualisation automatique pour tous les utilisateurs
+    startAutoRefresh();
 });
