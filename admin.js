@@ -78,8 +78,16 @@ function positionToolbar(toolbar, element) {
 }
 
 // Fonction pour rendre les éléments modifiables
-function makeContentEditable() {
-    if (!checkAdminStatus()) return;
+async function makeContentEditable() {
+    const isAdminUser = await checkAdminStatus();
+    if (!isAdminUser) {
+        // Désactiver l'édition si pas admin
+        document.querySelectorAll('.editable').forEach(el => {
+            el.contentEditable = 'false';
+            el.classList.remove('editable');
+        });
+        return;
+    }
 
     const toolbar = createEditorToolbar();
     let currentEditableElement = null;
@@ -103,6 +111,21 @@ function makeContentEditable() {
         'h2',
         'h3'
     ];
+
+    // Rendre les éléments éditables uniquement si admin
+    editableSelectors.forEach(selector => {
+        document.querySelectorAll(selector).forEach(element => {
+            if (isAdminUser) {
+                element.contentEditable = 'true';
+                element.classList.add('editable');
+                element.setAttribute('data-original-selector', selector);
+            } else {
+                element.contentEditable = 'false';
+                element.classList.remove('editable');
+                element.removeAttribute('data-original-selector');
+            }
+        });
+    });
 
     // Fonction pour sauvegarder tous les éléments modifiés
     async function saveAllModifiedContent() {
@@ -330,25 +353,35 @@ async function handleAdminLogin() {
     }
 }
 
-// Fonction pour actualiser périodiquement le contenu
+// Fonction pour actualiser périodiquement le contenu et vérifier les permissions
 function startAutoRefresh() {
-    // Charger le contenu immédiatement
-    loadSavedContent();
+    // Vérifier les permissions et charger le contenu immédiatement
+    const checkPermissionsAndLoad = async () => {
+        await makeContentEditable();
+        await loadSavedContent();
+    };
+    
+    checkPermissionsAndLoad();
     
     // Actualiser toutes les 30 secondes
-    setInterval(loadSavedContent, 30000);
+    setInterval(checkPermissionsAndLoad, 30000);
 }
 
 // Style pour le mode admin
 const style = document.createElement('style');
 style.textContent = `
-    .admin-mode .editable {
+    .editable {
         outline: 2px dashed #4CAF50;
         position: relative;
     }
-    .admin-mode .editable:hover {
+    .editable:hover {
         outline: 2px solid #4CAF50;
         background: rgba(76, 175, 80, 0.1);
+    }
+    [contenteditable="false"] {
+        outline: none !important;
+        background: none !important;
+        cursor: default !important;
     }
     #admin-button {
         position: fixed;
