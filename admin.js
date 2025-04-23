@@ -60,4 +60,132 @@ function makeContentEditable() {
     // Rendre les éléments modifiables
     editableSelectors.forEach(selector => {
         document.querySelectorAll(selector).forEach(element => {
-            element.setAttribute('content
+            element.setAttribute('contenteditable', 'true');
+            
+            element.addEventListener('focus', (e) => {
+                currentEditableElement = e.target;
+                toolbar.classList.add('visible');
+                positionToolbar(toolbar, e.target);
+            });
+
+            element.addEventListener('blur', (e) => {
+                if (!e.relatedTarget || !e.relatedTarget.closest('.editor-toolbar')) {
+                    toolbar.classList.remove('visible');
+                    saveContent(e);
+                }
+            });
+
+            element.addEventListener('input', () => {
+                showModifiedIndicator();
+            });
+        });
+    });
+
+    // Gestionnaire d'événements pour les boutons de la barre d'outils
+    toolbar.querySelectorAll('button').forEach(button => {
+        button.addEventListener('mousedown', (e) => {
+            e.preventDefault(); // Empêche la perte du focus
+            const command = button.dataset.command;
+            document.execCommand(command, false, null);
+            currentEditableElement?.focus();
+        });
+    });
+}
+
+// Fonction pour sauvegarder le contenu modifié
+async function saveContent(event) {
+    const element = event.target;
+    const content = element.innerHTML;
+    const selector = Array.from(element.classList).join('.') || element.tagName.toLowerCase();
+    const path = window.location.pathname;
+
+    try {
+        const response = await fetch('/.netlify/functions/saveContent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                path,
+                selector,
+                content
+            })
+        });
+
+        if (response.ok) {
+            showSavedIndicator();
+        } else {
+            throw new Error('Erreur lors de la sauvegarde');
+        }
+    } catch (error) {
+        console.error('Erreur de sauvegarde:', error);
+        showErrorIndicator();
+    }
+}
+
+// Fonction pour afficher l'indicateur de modification
+function showModifiedIndicator() {
+    let indicator = document.querySelector('.content-modified');
+    if (!indicator) {
+        indicator = document.createElement('div');
+        indicator.className = 'content-modified';
+        indicator.textContent = 'Modifications non sauvegardées';
+        document.body.appendChild(indicator);
+    }
+    indicator.classList.add('visible');
+}
+
+// Fonction pour afficher l'indicateur de sauvegarde
+function showSavedIndicator() {
+    const indicator = document.querySelector('.content-modified');
+    if (indicator) {
+        indicator.textContent = 'Modifications sauvegardées';
+        setTimeout(() => {
+            indicator.classList.remove('visible');
+        }, 2000);
+    }
+}
+
+// Fonction pour charger le contenu sauvegardé
+async function loadSavedContent() {
+    try {
+        const response = await fetch('/.netlify/functions/getContent');
+        if (!response.ok) throw new Error('Erreur lors du chargement');
+        
+        const savedContent = await response.json();
+        const currentPath = window.location.pathname;
+
+        if (savedContent[currentPath]) {
+            Object.entries(savedContent[currentPath]).forEach(([selector, content]) => {
+                const elements = document.querySelectorAll('.' + selector) || document.querySelectorAll(selector);
+                elements.forEach(element => {
+                    element.innerHTML = content;
+                });
+            });
+        }
+    } catch (error) {
+        console.error('Erreur de chargement:', error);
+        showErrorIndicator('Erreur lors du chargement du contenu');
+    }
+}
+
+// Fonction pour afficher une erreur
+function showErrorIndicator(message = 'Erreur lors de la sauvegarde') {
+    const indicator = document.querySelector('.content-modified') || document.createElement('div');
+    indicator.className = 'content-modified error';
+    indicator.textContent = message;
+    if (!indicator.parentNode) document.body.appendChild(indicator);
+    indicator.classList.add('visible');
+    
+    setTimeout(() => {
+        indicator.classList.remove('visible');
+    }, 3000);
+}
+
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    if (checkAdminStatus()) {
+        makeContentEditable();
+    }
+    loadSavedContent();
+});
