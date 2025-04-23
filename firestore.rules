@@ -8,23 +8,20 @@ service cloud.firestore {
     
     // Fonction pour vérifier si l'utilisateur est admin
     function isAdmin() {
-      return isAuthenticated() && 
-        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+      return isAuthenticated();
     }
     
     // Règles pour la collection categories
     match /categories/{categoryId} {
       // Lecture publique
       allow read: if true;
-      
-      // Seuls les admins peuvent créer, modifier ou supprimer
-      allow create, update, delete: if isAdmin();
+      // Seuls les utilisateurs connectés peuvent créer, modifier ou supprimer
+      allow create, update, delete: if isAuthenticated();
     }
     
     // Règles pour la collection admins
     match /admins/{userId} {
-      allow read: if isAuthenticated() && request.auth.uid == userId;
-      allow write: if false; // Seul via la console Firebase
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
   }
 }

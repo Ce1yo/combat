@@ -36,8 +36,33 @@ const auth = getAuth(app);
 console.log('Auth initialisé');
 
 // Vérifier l'état de l'authentification
-onAuthStateChanged(auth, (user) => {
-    console.log('État de l\'authentification changé:', user ? 'Utilisateur connecté' : 'Non connecté');
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        console.log('État de l\'authentification changé: Utilisateur connecté');
+        // Vérifier si l'utilisateur est admin
+        try {
+            const adminDoc = await getDoc(doc(db, 'admins', user.uid));
+            if (adminDoc.exists()) {
+                console.log('Utilisateur est admin');
+            } else {
+                console.log('Utilisateur n\'est pas admin');
+                // Créer le document admin pour l'utilisateur actuel
+                try {
+                    await setDoc(doc(db, 'admins', user.uid), {
+                        email: user.email,
+                        role: 'admin'
+                    });
+                    console.log('Document admin créé avec succès');
+                } catch (error) {
+                    console.error('Erreur lors de la création du document admin:', error);
+                }
+            }
+        } catch (error) {
+            console.error('Erreur lors de la vérification du statut admin:', error);
+        }
+    } else {
+        console.log('État de l\'authentification changé: Non connecté');
+    }
 });
 
 // Fonction pour créer un utilisateur admin si nécessaire
