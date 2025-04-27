@@ -1057,14 +1057,14 @@ main {
     max-width: 800px;
     margin-left: auto;
     padding-right: 2rem;
-    text-align: right;
+    text-align: left;
 }
 
 .histoire-content .quote-block {
     max-width: 800px;
     margin-left: auto;
     padding-right: 2rem;
-    text-align: right;
+    text-align: left;
 }
 
 .histoire-content .quote {
