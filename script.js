@@ -5,28 +5,44 @@ const projectsData = {
         title: 'Projet Personnel 1',
         description: 'Description détaillée du projet personnel 1.',
         technologies: ['HTML', 'CSS', 'JavaScript'],
-        images: ['images/BAT1_noir.png'],
+        images: [
+            'images/BAT1_noir.png',
+            'images/BAT1_blanc.png',
+            'images/BAT1_gris.png'
+        ],
         link: '#'
     },
     perso2: {
         title: 'Projet Personnel 2',
         description: 'Description détaillée du projet personnel 2.',
         technologies: ['React', 'Node.js'],
-        images: ['images/BAT1_noir.png'],
+        images: [
+            'images/BAT1_noir.png',
+            'images/BAT1_blanc.png',
+            'images/BAT1_gris.png'
+        ],
         link: '#'
     },
     perso3: {
         title: 'Projet Personnel 3',
         description: 'Description détaillée du projet personnel 3.',
         technologies: ['Vue.js', 'Firebase'],
-        images: ['images/BAT1_noir.png'],
+        images: [
+            'images/BAT1_noir.png',
+            'images/BAT1_blanc.png',
+            'images/BAT1_gris.png'
+        ],
         link: '#'
     },
     perso4: {
         title: 'Projet Personnel 4',
         description: 'Description détaillée du projet personnel 4.',
         technologies: ['Angular', 'TypeScript'],
-        images: ['images/BAT1_noir.png'],
+        images: [
+            'images/BAT1_noir.png',
+            'images/BAT1_blanc.png',
+            'images/BAT1_gris.png'
+        ],
         link: '#'
     },
     // Projets professionnels
@@ -34,21 +50,33 @@ const projectsData = {
         title: 'Projet Pro 1',
         description: 'Description détaillée du projet professionnel 1.',
         technologies: ['React', 'AWS'],
-        images: ['images/MULTI_HALFTONE_BLANC.png'],
+        images: [
+            'images/MULTI_HALFTONE_BLANC.png',
+            'images/MULTI_HALFTONE_GRIS.png',
+            'images/MULTI_HALFTONE_NOIR.png'
+        ],
         link: '#'
     },
     pro2: {
         title: 'Projet Pro 2',
         description: 'Description détaillée du projet professionnel 2.',
         technologies: ['Vue.js', 'Node.js'],
-        images: ['images/MULTI_HALFTONE_BLANC.png'],
+        images: [
+            'images/MULTI_HALFTONE_BLANC.png',
+            'images/MULTI_HALFTONE_GRIS.png',
+            'images/MULTI_HALFTONE_NOIR.png'
+        ],
         link: '#'
     },
     pro3: {
         title: 'Projet Pro 3',
         description: 'Description détaillée du projet professionnel 3.',
         technologies: ['Angular', 'Django'],
-        images: ['images/MULTI_HALFTONE_BLANC.png'],
+        images: [
+            'images/MULTI_HALFTONE_BLANC.png',
+            'images/MULTI_HALFTONE_GRIS.png',
+            'images/MULTI_HALFTONE_NOIR.png'
+        ],
         link: '#'
     },
     // Expérimentations
@@ -56,14 +84,22 @@ const projectsData = {
         title: 'Expérimentation 1',
         description: 'Description détaillée de l\'expérimentation 1.',
         technologies: ['Three.js', 'WebGL'],
-        images: ['images/Ombre_4K.png'],
+        images: [
+            'images/Ombre_4K.png',
+            'images/MULTI_HALFTONE_BLANC.png',
+            'images/BAT1_noir.png'
+        ],
         link: '#'
     },
     exp2: {
         title: 'Expérimentation 2',
         description: 'Description détaillée de l\'expérimentation 2.',
         technologies: ['Canvas', 'GSAP'],
-        images: ['images/Ombre_4K.png'],
+        images: [
+            'images/Ombre_4K.png',
+            'images/MULTI_HALFTONE_BLANC.png',
+            'images/BAT1_noir.png'
+        ],
         link: '#'
     }
 };
@@ -213,18 +249,34 @@ document.addEventListener('DOMContentLoaded', () => {
         const modalBody = modal.querySelector('.modal-body');
         const closeBtn = modal.querySelector('.close-modal');
 
-        // Ouvrir la modal
-        document.querySelectorAll('.view-project').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const projectCard = e.target.closest('.project-card');
+        // Ouvrir la modal en cliquant sur la carte
+        document.querySelectorAll('.project-card').forEach(card => {
+            card.style.cursor = 'pointer';
+            card.addEventListener('click', (e) => {
+                const projectCard = card;
                 const projectId = projectCard.dataset.project;
                 const project = projectsData[projectId];
 
                 if (project) {
                     const content = `
                         <h2>${project.title}</h2>
-                        <div class="project-images">
-                            ${project.images.map(img => `<img src="${img}" alt="${project.title}">`).join('')}
+                        <div class="project-carousel">
+                            <div class="carousel-container">
+                                <button class="carousel-button prev">&lt;</button>
+                                <div class="carousel-track">
+                                    ${project.images.map((img, index) => `
+                                        <div class="carousel-slide${index === 0 ? ' active' : ''}">
+                                            <img src="${img}" alt="${project.title}">
+                                        </div>
+                                    `).join('')}
+                                </div>
+                                <button class="carousel-button next">&gt;</button>
+                            </div>
+                            <div class="carousel-dots">
+                                ${project.images.map((_, index) => `
+                                    <button class="carousel-dot${index === 0 ? ' active' : ''}" data-index="${index}"></button>
+                                `).join('')}
+                            </div>
                         </div>
                         <div class="project-details">
                             <p>${project.description}</p>
@@ -234,12 +286,60 @@ document.addEventListener('DOMContentLoaded', () => {
                                     ${project.technologies.map(tech => `<li>${tech}</li>`).join('')}
                                 </ul>
                             </div>
-                            ${project.link ? `<a href="${project.link}" class="project-link" target="_blank">Voir le projet</a>` : ''}
                         </div>
                     `;
                     modalBody.innerHTML = content;
                     modal.style.display = 'block';
                     document.body.style.overflow = 'hidden';
+
+                    // Initialiser le carrousel
+                    const carousel = modalBody.querySelector('.project-carousel');
+                    const slides = carousel.querySelectorAll('.carousel-slide');
+                    const dots = carousel.querySelectorAll('.carousel-dot');
+                    const prevBtn = carousel.querySelector('.carousel-button.prev');
+                    const nextBtn = carousel.querySelector('.carousel-button.next');
+                    let currentSlide = 0;
+
+                    const showSlide = (index) => {
+                        slides.forEach(slide => slide.classList.remove('active'));
+                        dots.forEach(dot => dot.classList.remove('active'));
+                        slides[index].classList.add('active');
+                        dots[index].classList.add('active');
+                    };
+
+                    const nextSlide = () => {
+                        currentSlide = (currentSlide + 1) % slides.length;
+                        showSlide(currentSlide);
+                    };
+
+                    const prevSlide = () => {
+                        currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+                        showSlide(currentSlide);
+                    };
+
+                    // Événements pour les boutons et les points
+                    prevBtn.addEventListener('click', prevSlide);
+                    nextBtn.addEventListener('click', nextSlide);
+                    
+                    dots.forEach((dot, index) => {
+                        dot.addEventListener('click', () => {
+                            currentSlide = index;
+                            showSlide(currentSlide);
+                        });
+                    });
+
+                    // Navigation avec les flèches du clavier
+                    const handleKeyboard = (e) => {
+                        if (e.key === 'ArrowLeft') prevSlide();
+                        if (e.key === 'ArrowRight') nextSlide();
+                    };
+                    window.addEventListener('keydown', handleKeyboard);
+
+                    // Nettoyer les événements à la fermeture
+                    const cleanup = () => {
+                        window.removeEventListener('keydown', handleKeyboard);
+                    };
+                    modal.addEventListener('hide', cleanup, { once: true });
                 }
             });
         });
